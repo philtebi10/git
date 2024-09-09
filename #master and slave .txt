@@ -1,0 +1,52 @@
+#master and slave 
+sudo su -         grant root privillege on both instances
+
+#create users(on both) 
+su -
+useradd user1
+passwd user1
+
+#add user to the (master)
+#root menu
+vim /etc/sudoers
+i-insert
+user1 user1=NOPASSWD: ALL
+esc
+:wq!
+
+#restart sshd
+systemctl restart sshd
+
+# all cloud provider have ssh denied so we have to enable **on the slave machine specific(slave)
+vim /etc/ssh/sshd_config
+#grant authorization to (yes)
+
+#retsart sshd
+systemctl restart sshd
+
+#cretae are key pair on ther master user1(master)
+switch to user 
+su - user1
+
+#generate keypair
+ssh-keygen
+
+#cd to the .shh and copy the keypair to the slave 
+ssh-copy-id -i ~/.ssh/id_rsa.pub user1@(slave private ip)
+
+#now to ssh to the slave
+ssh 'user1@(slave private ip)'
+
+#install java on the slave 
+sudo dnf install java-17-amazon-corretto -y
+
+#set java home(with jenkins)
+vim /etc/profile
+#under export add 
+export JAVA_HOME=(NEED TO COPY THE PATHE VARIABLE FROM THE COMMAND alternatives --config java)
+export PATH=$JAVA_HOME/bin:$PATH
+esc
+:wq!
+
+
+
